@@ -7,11 +7,17 @@
     <link rel="stylesheet" href="http://dist.geohey.com/g-js/latest/lib/g.css">
     <script type="text/javascript" src="http://dist.geohey.com/g-js/latest/lib/g.min.js"></script>
     <script src="http://dist.geohey.com/g-api.js/latest/g-api.min.js"></script>
+    <script type="text/javascript" src="./jquery.js"></script>
     <link rel="stylesheet" href="./common.css">
 </head>
 
 <body>
     <div id="mapContainer"></div>
+    <div id="buttonContainer">
+        <input type="button" value="显示/隐藏圈" name="" id="getCircle">
+        <input type="button" value="显示/隐藏连线" name="" id="getLine">
+        <input type="button" value="显示/隐藏小旗" name="" id="getImg">
+    </div>
     <script type="text/javascript">
     var sData = {
         "CityMap_Dimension": [{
@@ -4425,7 +4431,6 @@
                     //北京坐标转化为web墨卡托坐标然后加入到数组中
                     itemArr.push(G.Proj.WebMercator.project(parseFloat(arr1[0]), //经度
                         parseFloat(arr1[1]))); //纬度
-
                 }
                 array.push(itemArr);
                 // console.log(itemArr)
@@ -4438,40 +4443,38 @@
                 fillColor: 'rgba(105,241,214,0.5)', //填充色
                 // fillOpacity: 0.5, //填充透明度
                 outlineColor: 'rgb(9,95,78)', // 边框线颜色
-
             });
         //将多面添加到图层
         g.addTo(graphicLayer);
 
-
-        // console.log(graphicLayer)
-        var p2 = G.Proj.WebMercator.project(121.621331, 38.919666);
-        // console.log(p2)
-
-        for (var i = 0; i < array.length; i++) {
-            // console.log(array[i])
-            var centerPort = G.GeomUtil.centroid(array[i]);
-            console.log(p2)
+        //图层添加中心文字
+        addText = function(centerPort) {
             var g = new G.Graphic.Point(centerPort, null, {
                 shape: 'text', //文字类型标识
-                size: [16, 20], // 字体大小
+                size: [16], // 字体大小
                 offset: [5, 10], // 偏移量
                 text: itemName[i], //文字名称
                 fillColor: 'rgb(3, 29, 54)', //填充色
                 // clickable: true //可点击的标识
             });
             g.addTo(graphicLayer);
+        }
 
-            var g1 = new G.Graphic.Point(centerPort, null, {
+        //图层添加图标
+        addImg = function(centerPort) {
+            var g = new G.Graphic.Point(centerPort, null, {
                 shape: 'image',
-                size: [16, 20], // 字体大小
+                size: [16, 20], // 图片大小
                 offset: [-5, -10], // 偏移量
                 image: 'http://js.soufunimg.com/industry/citymap/images/mark-label.ico'
                 // clickable: true //可点击的标识
             });
-            g1.addTo(graphicLayer);
+            g.addTo(graphicLayer);
+        }
 
-            var g2 = new G.Graphic.Point(centerPort, null, {
+        //图层添加圆圈
+        addCircle = function(centerPort) {
+            var g = new G.Graphic.Point(centerPort, null, {
                 shape: 'circle',
                 size: [50], // 字体大小
                 offset: [0, 0], // 偏移量
@@ -4480,42 +4483,33 @@
                 outlineColor: 'rgb(223,172,80)',
                 // clickable: true //可点击的标识
             });
-            g2.addTo(graphicLayer);
+            g.addTo(graphicLayer);
+        }
 
-            var g3 = new G.Graphic.Polyline([p2, centerPort], null, {
+        //图层添加连线
+        addLine = function(targetPoint, centerPort) {
+            var g = new G.Graphic.Polyline([targetPoint, centerPort], null, {
                 lineWidth: 5,
                 lineColor: 'aqua'
             });
-            g3.addTo(graphicLayer);
-
+            g.addTo(graphicLayer);
         }
 
+        //目标点
+        var targetPoint = G.Proj.WebMercator.project(121.621331, 38.919666);
+        for (var i = 0; i < array.length; i++) {
+            // console.log(array[i])
+            var centerPort = G.GeomUtil.centroid(array[i]);
+            addText(centerPort);
+            addCircle(centerPort);
+            addImg(centerPort);
+            addLine(targetPoint,centerPort);
+        }
 
-
-        //监听事件
-        graphicLayer.addListener('graphicOver', function(e) {
-            console.log(e)
-        }); //鼠标进入
-        graphicLayer.addListener('graphicOut', onGraphicOut); //鼠标离开
-        graphicLayer.addListener('graphicClicked', onGraphicClicked); //鼠标离开
+        // $('#getCircle').bind("click", function(centerPort){
+        //     addText(centerPort);
+        // })
     });
-
-
-    //事件方法
-    //鼠标进入
-    function onGraphicOver(e) {
-        console.log(e);
-        var p = G.Proj.WebMercator.project(116.39, 39.9);
-        console.log(p);
-    }
-    //鼠标离开
-    function onGraphicOut(e) {
-        console.log(e);
-    }
-
-    function onGraphicClicked(e) {
-        // console.log(e.graphic);
-    }
     </script>
 </body>
 
