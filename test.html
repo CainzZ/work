@@ -7,16 +7,17 @@
     <link rel="stylesheet" href="http://dist.geohey.com/g-js/latest/lib/g.css">
     <script type="text/javascript" src="http://dist.geohey.com/g-js/latest/lib/g.min.js"></script>
     <script src="http://dist.geohey.com/g-api.js/latest/g-api.min.js"></script>
-    <script type="text/javascript" src="./jquery.js"></script>
-    <link rel="stylesheet" href="./common.css">
+    <script type="text/javascript" src="./asetss/js/jquery.js"></script>
+    <link rel="stylesheet" href="./asetss/css/common.css">
 </head>
 
 <body>
     <div id="mapContainer"></div>
     <div id="buttonContainer">
-        <input type="button" value="显示/隐藏圈" name="" id="getCircle">
-        <input type="button" value="显示/隐藏连线" name="" id="getLine">
-        <input type="button" value="显示/隐藏小旗" name="" id="getImg">
+        <input type="button" value="隐藏图形" name="" id="hideGraphic">
+        <input type="button" value="显示圆圈" name="" id="showCircle">
+        <input type="button" value="显示连线" name="" id="showLine">
+        <input type="button" value="显示标记" name="" id="showImg">
     </div>
     <script type="text/javascript">
     var sData = {
@@ -4414,6 +4415,19 @@
         var graphicLayer = new G.Layer.Graphic();
         graphicLayer.addTo(map);
 
+        var circleLayer = new G.Layer.Graphic();
+        circleLayer.addTo(map);
+
+        var lineLayer = new G.Layer.Graphic();
+        lineLayer.addTo(map);
+
+        var imgLayer = new G.Layer.Graphic();
+        imgLayer.addTo(map);
+
+        var textLayer = new G.Layer.Graphic();
+        textLayer.addTo(map);
+
+
 
         //取数据
         var array = [];
@@ -4438,14 +4452,17 @@
         }
         // console.log(itemName)
         //添加多面
-        var g = new G.Graphic.MultiPolygon({ "m": [array] },
-            null, {
-                fillColor: 'rgba(105,241,214,0.5)', //填充色
-                // fillOpacity: 0.5, //填充透明度
-                outlineColor: 'rgb(9,95,78)', // 边框线颜色
-            });
-        //将多面添加到图层
-        g.addTo(graphicLayer);
+        addArea = function(array) {
+            var g = new G.Graphic.MultiPolygon({ "m": [array] },
+                null, {
+                    fillColor: 'rgba(105,241,214,0.5)', //填充色
+                    // fillOpacity: 0.5, //填充透明度
+                    outlineColor: 'rgb(9,95,78)', // 边框线颜色
+                });
+            //将多面添加到图层
+            g.addTo(graphicLayer);
+        }
+        addArea(array);
 
         //图层添加中心文字
         addText = function(centerPort) {
@@ -4457,7 +4474,8 @@
                 fillColor: 'rgb(3, 29, 54)', //填充色
                 // clickable: true //可点击的标识
             });
-            g.addTo(graphicLayer);
+            //console.log(itemName)
+            g.addTo(textLayer);
         }
 
         //图层添加图标
@@ -4469,21 +4487,21 @@
                 image: 'http://js.soufunimg.com/industry/citymap/images/mark-label.ico'
                 // clickable: true //可点击的标识
             });
-            g.addTo(graphicLayer);
+            g.addTo(imgLayer);
         }
 
         //图层添加圆圈
         addCircle = function(centerPort) {
             var g = new G.Graphic.Point(centerPort, null, {
                 shape: 'circle',
-                size: [50], // 字体大小
+                size: [150], // 字体大小
                 offset: [0, 0], // 偏移量
                 fillColor: 'rgba(255, 255, 255, 0.1)',
                 outline: true,
                 outlineColor: 'rgb(223,172,80)',
                 // clickable: true //可点击的标识
             });
-            g.addTo(graphicLayer);
+            g.addTo(circleLayer);
         }
 
         //图层添加连线
@@ -4492,23 +4510,69 @@
                 lineWidth: 5,
                 lineColor: 'aqua'
             });
-            g.addTo(graphicLayer);
+            g.addTo(lineLayer);
         }
 
         //目标点
         var targetPoint = G.Proj.WebMercator.project(121.621331, 38.919666);
         for (var i = 0; i < array.length; i++) {
-            // console.log(array[i])
             var centerPort = G.GeomUtil.centroid(array[i]);
             addText(centerPort);
             addCircle(centerPort);
             addImg(centerPort);
-            addLine(targetPoint,centerPort);
+            addLine(targetPoint, centerPort);
         }
+        
+        $("#hideGraphic").bind("click", function() {
+            circleLayer.clear();
+            imgLayer.clear();
+            lineLayer.clear();
+        })
+     
+        $("#showCircle").bind("click", function() {
+            if($("#showCircle").val() == "显示圆圈"){
+                $("#showCircle").val("隐藏圆圈");
+                for (var i = 0; i < array.length; i++) {
+                    var centerPort = G.GeomUtil.centroid(array[i]);
+                   addCircle(centerPort);
+                }
+            } else {
+                $("#showCircle").val("显示圆圈");
+                circleLayer.clear();
+            }
 
-        // $('#getCircle').bind("click", function(centerPort){
-        //     addText(centerPort);
-        // })
+        })
+
+        $("#showLine").bind("click", function() {
+            if($("#showLine").val() == "显示连线"){
+                $("#showLine").val("隐藏连线");
+                for (var i = 0; i < array.length; i++) {
+                    var centerPort = G.GeomUtil.centroid(array[i]);
+                    addLine(targetPoint, centerPort);
+                }
+            } else {
+                $("#showLine").val("显示连线");
+                lineLayer.clear();
+            }
+        })
+
+        $("#showImg").bind("click", function() {
+            // console.log($("#showImg").val())
+            if($("#showImg").val() == "显示标记"){
+                $("#showImg").val("隐藏标记");
+                for (var i = 0; i < array.length; i++) {
+                    var centerPort = G.GeomUtil.centroid(array[i]);
+                    addImg(centerPort);
+                }
+            } else {
+
+                $("#showImg").val("显示标记");
+                imgLayer.clear();
+            }
+        })
+        
+
+        
     });
     </script>
 </body>
