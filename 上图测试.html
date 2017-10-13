@@ -1,0 +1,446 @@
+<!doctype html>
+<html style="width: 100%; height: 100%;">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="./g-js/g.css">
+    <link rel="stylesheet" type="text/css" href="asetts/css/index.css">
+    <link rel="stylesheet" type="text/css" href="asetts/css/common.css">
+    <script type="text/javascript" src="asetts/js/jquery.js"></script>
+    <script type="text/javascript" src="asetts/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="./g-js/g.min.js"></script>
+    <script type="text/javascript" src="asetts/js/g_map_1.js"></script>
+    <style type="text/css">
+    #label {
+        position: absolute;
+        height: 20px;
+        background: #000;
+        color: #fff;
+        line-height: 20px;
+        padding: 0 5px;
+        border-radius: 5px;
+    }
+    </style>
+</head>
+
+<body style="margin: 0; padding:0; width: 100%; height: 100%; background:#000">
+    <div id="map" style="width: 100%; height: 100%; background:#F0EDE5"></div>
+    <script>
+    G.ready(function() {
+
+        var gMap = new cityGMap.map({
+            map: 'map',
+            point: {
+                x: 116.40567,
+                y: 39.914935
+            }
+        });
+        zoomControl = new G.Control.Zoom({
+            position: 'top-right'
+        });
+        gMap.map.addControl(zoomControl);
+
+        var label = document.createElement('div')
+        label.id = 'label'
+        document.body.appendChild(label)
+        var imgLayer = new G.Layer.Graphic();
+
+
+        G.loadModules(['heat', 'maps', 'fluid', 'dataviz'], function() {
+            var options = {
+                host: 'http://10.16.0.160',
+                uri: 'http://10.16.0.160/s/dataviz/v2/config',
+                ak: 'NTc2ZmQ4OGM3ZTA4NGM1OThkNzAyZGI1MTY0YWUyMjA',
+                tileHost: 'http://10.16.0.160'
+            }
+
+            var tileLayer = new G.Layer.BaiduMap();
+            tileLayer.addTo(gMap.map);
+
+            var layerList = G.DataViz.get([{
+                "dataUid": "ae1c486b4ca14d1ebb0287a048f8b007",
+                "dataType": "tmp",
+                "interactivity": [
+                    "scityid"
+                ],
+                "vizConfig": {
+                    "type": "polygon-category",
+                    "fillOpacity": 0.8,
+                    "outlineColor": "#ffffff",
+                    "outlineWidth": 1,
+                    "outlineOpacity": 0.8,
+                    "fieldName": "scityid",
+                    "buckets": [{
+                            "value": "ffcf9c2a-357f-4295-8d02-9e4ae5d0a119",
+                            "color": "#0000ff"
+                        },
+                        {
+                            "value": "FFCB0265-1AA3-4829-B72E-EFA8D625399C",
+                            "color": "#000fff"
+                        },
+                        {
+                            "value": "FF46ECC3-2964-416D-B210-5716A1378242",
+                            "color": "#001fff"
+                        },
+                        {
+                            "value": "FEC03382-6A93-41F4-8D82-E808A09E6F04",
+                            "color": "#002eff"
+                        },
+                        {
+                            "value": "feb9b146-709b-430d-815e-e2e54d67fe13",
+                            "color": "#003dff"
+                        },
+                        {
+                            "value": "FE64CB0D-F03A-46BC-855A-BA2999E3849C",
+                            "color": "#004bff"
+                        },
+                        {
+                            "value": "FC5C02E0-4D7A-48ED-B10D-B40E8C78DBA2",
+                            "color": "#005bff"
+                        },
+                        {
+                            "value": "FAFC9593-03F9-45BA-ADED-5C5A7AC6A12B",
+                            "color": "#006aff"
+                        },
+                        {
+                            "value": "FA0AEA3F-CE3F-4141-89FC-3E6105BA59F2",
+                            "color": "#0079ff"
+                        },
+                        {
+                            "value": "f97442b7-1c7d-4ba7-ada9-e356ce3f9b4a",
+                            "color": "#0088ff"
+                        },
+                        {
+                            "value": "F8D942EC-7795-4293-8489-EF7D8E2234D9",
+                            "color": "#0098ff"
+                        },
+                        {
+                            "value": "f79e017f-3e81-421b-af0c-75bcd9add770",
+                            "color": "#00a7ff"
+                        },
+                        {
+                            "value": "F60CC8EC-82D2-4F10-8606-E5FF5E4EADA3",
+                            "color": "#00b6ff"
+                        },
+                        {
+                            "value": "f43974e7-32a4-45df-8ae8-a7eb142fd5df",
+                            "color": "#00c6ff"
+                        },
+                        {
+                            "value": "F43140E7-8163-4D65-9BFD-AEF4A45AD905",
+                            "color": "#00d5ff"
+                        },
+                        {
+                            "value": "F2102575-8DED-432D-BA96-0952F427D93F",
+                            "color": "#00e3ff"
+                        },
+                        {
+                            "value": "f1e90564-efec-4521-80d5-4666998067ec",
+                            "color": "#00f2ff"
+                        },
+                        {
+                            "value": "F127C6E6-A994-48A7-8440-A4E08D8E9927",
+                            "color": "#00ffff"
+                        },
+                        {
+                            "value": "efce77a3-d836-4847-897f-9930e58ef0af",
+                            "color": "#00ffe3"
+                        },
+                        {
+                            "value": "efbbb608-0971-4bfa-9759-5bc3b392f9b9",
+                            "color": "#00ffc6"
+                        },
+                        {
+                            "value": "EED769A8-0B2C-446C-8E3F-F5E99E01112A",
+                            "color": "#00ffa7"
+                        },
+                        {
+                            "value": "ed323f91-7c9b-4331-8ede-48f3bf2baed7",
+                            "color": "#00ff89"
+                        },
+                        {
+                            "value": "ec224a51-6810-4885-8852-caaae0aee0f8",
+                            "color": "#00ff6a"
+                        },
+                        {
+                            "value": "EB5E4FD8-57EF-456F-8D54-D5CD87C5562C",
+                            "color": "#00ff4b"
+                        },
+                        {
+                            "value": "EB5BAD7E-0A90-43A3-8547-FBAA668C6598",
+                            "color": "#00ff2d"
+                        },
+                        {
+                            "value": "EB173636-B83D-4AE0-BC4F-8AA820E7A07D",
+                            "color": "#00ff0f"
+                        },
+                        {
+                            "value": "EA28CDE8-C576-4219-B4ED-1A0216BFDB98",
+                            "color": "#0fff00"
+                        },
+                        {
+                            "value": "e993035c-1209-4a86-8cee-ea0e80a35f74",
+                            "color": "#2eff00"
+                        },
+                        {
+                            "value": "E84FB7D0-A859-4923-899D-0E15C7D26FD0",
+                            "color": "#4cff00"
+                        },
+                        {
+                            "value": "e83875a9-79cb-40c6-9508-df6fd2ac31a3",
+                            "color": "#6aff00"
+                        },
+                        {
+                            "value": "e7e2addb-bf21-4c33-a39d-4cffee20c964",
+                            "color": "#89ff00"
+                        },
+                        {
+                            "value": "E6F81DA4-613C-4D43-975C-BB75CDE587AF",
+                            "color": "#a7ff00"
+                        },
+                        {
+                            "value": "e6e5f5f9-3e8d-4e6a-b92c-0e20e52a0820",
+                            "color": "#c6ff00"
+                        },
+                        {
+                            "value": "e6228fd7-86d9-4c5e-86f9-9a8a0cdd3f82",
+                            "color": "#e3ff00"
+                        },
+                        {
+                            "value": "E5469422-4DF9-40BB-AC99-CC7732408A88",
+                            "color": "#ffff00"
+                        },
+                        {
+                            "value": "E3B15D83-C566-4968-8A1D-96A149FDE487",
+                            "color": "#fff200"
+                        },
+                        {
+                            "value": "E32A8825-1542-4A28-B553-65AFAF88143B",
+                            "color": "#ffe400"
+                        },
+                        {
+                            "value": "E20F1DCB-1EC6-40B5-A59F-7C13A03B448E",
+                            "color": "#ffd500"
+                        },
+                        {
+                            "value": "E1CC6B2E-DB1B-4159-83C0-60AD711F6575",
+                            "color": "#ffc600"
+                        },
+                        {
+                            "value": "E1CB341C-CE62-42B0-98FE-6B6E7EA70BA1",
+                            "color": "#ffb600"
+                        },
+                        {
+                            "value": "e009b9e3-9380-4e31-9476-a1e0e7a5509d",
+                            "color": "#ffa700"
+                        },
+                        {
+                            "value": "DEBF0A9F-AE55-4A28-BD17-BBF088A1B4E3",
+                            "color": "#ff9800"
+                        },
+                        {
+                            "value": "de286043-f3b3-4666-83c2-109c70f5eded",
+                            "color": "#ff8800"
+                        },
+                        {
+                            "value": "DD925B4A-F093-4F4F-B4AE-1DE6BC425179",
+                            "color": "#ff7900"
+                        },
+                        {
+                            "value": "DD06197B-38C5-4E70-BDEA-7D7DE7F79A93",
+                            "color": "#ff6a00"
+                        },
+                        {
+                            "value": "DBF46DBD-CD5A-441F-A5D4-FDE22B1403DE",
+                            "color": "#ff5b00"
+                        },
+                        {
+                            "value": "DB339C88-025D-42C7-B5EE-730CD267D3E4",
+                            "color": "#ff4c00"
+                        },
+                        {
+                            "value": "DA7CA222-88E9-4078-BC4C-52B7D66AE975",
+                            "color": "#ff3d00"
+                        },
+                        {
+                            "value": "d89e13e9-bd86-4663-9233-09d144206704",
+                            "color": "#ff2e00"
+                        },
+                        {
+                            "value": "d85083ca-b50e-4560-bae3-8c148b87be14",
+                            "color": "#ff1f00"
+                        },
+                        {
+                            "value": "其它",
+                            "color": "#ff0f00"
+                        }
+                    ],
+                    "labelFont": "Microsoft YaHei Regular",
+                    "labelSize": 12,
+                    "labelColor": "#000000"
+                }
+            }], options, gMap.map);
+            imgLayer.addTo(gMap.map);
+            var layerArray = [];
+            for (var i = 0; i < layerList.length; i++) {
+                var item = layerList[i];
+                var layer = item.layer;
+                gMap.map.addLayer(layer);
+                layerArray.push({
+                    uid: item.dataUid,
+                    type: item.dataType
+                });
+                // console.log(item.utfGridLayer)
+                if (item.utfGridLayer) {
+                    item.utfGridLayer.options.showAttr = false;
+                    gMap.map.addLayer(item.utfGridLayer);
+                    // console.log(item.utfGridLayer)
+                    item.utfGridLayer.addListener('gridMouseMove', function(e) {
+                        if (e.data) {
+                            label.style.display = 'inline-block';
+                            label.innerHTML = e.data['scityid']
+                            label.style.top = e.point[1] - 25 + 'px';
+                            label.style.left = e.point[0] + 5 + 'px';
+                        } else {
+                            label.style.display = 'none';
+                        }
+                    });
+
+                }
+            };
+            layerArray.reverse();
+
+            //点击高亮
+            var highLightLayer = new G.Layer.Graphic();
+            gMap.map.addLayer(highLightLayer);
+
+            gMap.map.addListener('click', function(e) {
+                var tolerance = 0;
+
+                if (window.mobile) {
+                    tolerance = tolerance < 8 ? 8 : tolerance;
+                } else {
+                    tolerance = tolerance < 5 ? 5 : tolerance;
+                }
+                // 将屏幕坐标转换为地图坐标
+                var mapPoint = gMap.map.toMap([e.screenX, e.screenY]);
+
+                var ld = gMap.map.toMap([e.screenX - tolerance, e.screenY + tolerance]);
+                var ru = gMap.map.toMap([e.screenX + tolerance, e.screenY - tolerance]);
+                var rect = [ld[0], ld[1], ru[0], ru[1]];
+
+                highLightLayer.clear();
+                gMap.map.hidePopup();
+                $.ajax({
+                    url: 'http://geohey.com/s/data/' + uid + '/query?ak=' + ak,
+                    type: 'GET',
+                    dataType: 'jsonp',
+                    data: data,
+                    success: function(data) {
+                        console.log(data)
+                        if (data) {
+                            G.DataViz.highLight(data, highLightLayer);
+                            var content = '';
+                            var attrs = data[0].features[0].attrs;
+                            var labelPoint = G.GeomUtil.labelPoint(data[0].features[0].geom)
+                            for (var key in attrs) {
+                                content += '<div><span>' + attrs[key] + '</span></div>'
+                            }
+                            gMap.map.showPopup(labelPoint, content)
+                        }
+                    },
+                    error: function() {
+                        console.log('err:数据请求失败')
+                    }
+                })
+            })
+            // var arr = [
+            //     [13121118.459571157, 5488380.69221768],
+            //     [12193581.739862686, 4748076.49845207],
+            //     [12465594.504964156, 5067671.288514679],
+            //     [11781190.50958375, 3106321.0077105],
+            //     [12108952.48688725, 3752061.0226965],
+            //     [12940587.35467225, 3194376.4642995]
+            // ]
+
+            addImg = function(info) {
+                var centerPort = G.Proj.WebMercator.project(info.x, info.y)
+                var g = new G.Graphic.Point(centerPort, null, {
+                    shape: 'image',
+                    size: [30, 35], // 图片大小
+                    offset: [-5, -30], // 偏移量
+                    image: 'http://js.soufunimg.com/industry/citymap/images/mark-label.ico',
+                    clickable: true, //可点击的标识
+                });
+                g.info = info
+                g.addTo(imgLayer)
+            }
+
+            var dataInfo = { x: 116.40567, y: 39.914935, sName: '地块—' + i, sID: i }
+            addImg(dataInfo);
+
+        });
+
+
+
+        imgLayer.bind('graphicClicked', function(e) {
+            // console.log(e.graphic.info)
+            var point = e.graphic.geom;
+            var dataInfo = e.graphic.info;
+            var id = 'mapTip_distrct_' + dataInfo.sID;
+            var tips = gMap.tips || {};
+            var tip = tips[id];
+            if (tip) {
+                tip.show();
+                if (!tip.opts.screwed) tip.setPosition(point);
+            } else {
+                var gtip = new cityGMap.gtip(gMap, {
+                    id: id,
+                    point: point,
+                    position: '',
+                    className: 'suspendbox',
+                    draggable: 'enable',
+                    innerHtml: `<span class="btn-close" style="display: none;">×</span>
+                            <div class="tb_tit clearfix cursor_move">
+                                <a href="javascript:;" class="fl col_white font16 mr05">` + dataInfo.sName + `</a>
+                                <span class="label label-wtxt fl">开发区</span>
+                            </div>`,
+                    methods: {
+                        mouseover: function(e, t) {
+                            t.$node.find('.btn-close').show();
+                        },
+                        mouseout: function(e, t) {
+                            t.$node.find('.btn-close').hide();
+                        }
+                    },
+                    callback: {
+                        close: function(e) {
+                            e.parent().remove()
+                        }
+                    }
+                });
+                gMap.addMapTip(gtip);
+            }
+        })
+
+        imgLayer.bind('graphicOver', function(e) {
+            var point = e.graphic.geom;
+            // console.log(gMap.map.showPopup())
+            gMap.map.showPopup()._canvasOffset = [250, 257]
+
+            gMap.map.showPopup(point, "哼哼哈嘿");
+        });
+
+        imgLayer.bind('graphicOut', function() {
+            gMap.map.hidePopup()
+        });
+
+
+
+    });
+    </script>
+    <script type="text/javascript">
+    </script>
+</body>
+
+</html>
