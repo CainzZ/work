@@ -31,8 +31,6 @@ function preventDefault(e) {
     factory(global.cityGMap = global.cityGMap || {});
 }(this,
     function(exports) {
-
-
         //设置默认样式
         function BaseMap(param) {
             this.param = $.extend({}, {
@@ -53,8 +51,8 @@ function preventDefault(e) {
                     x: null,
                     y: null
                 },
+                mapStyle: null
             }, param);
-
             this.overlays = {};
             this.tips = {};
             this.initialize();
@@ -78,10 +76,8 @@ function preventDefault(e) {
                 //设置地图中心
                 gmap.centerAt(point);
             }
-
             this.gmap = gmap;
             // console.log(gmap)
-
             this.mapContainer = document.getElementById(this.param.map);
         }
 
@@ -110,6 +106,105 @@ function preventDefault(e) {
             }
         }
 
+        /*
+            
+            更换地图类型  黑色底图目前不能这么添加
+            需要直接瓦片图链接加入
+            先清除所有图层 BaseMap.prototype.clearLayers（）
+            然后调用  BaseMap.prototype.adjustByLayer（）
+        
+        */
+
+        BaseMap.prototype.setMapType = function(type) {
+            var mapTypeLayer;
+            var me = this;
+            switch (type) {
+                case 1:
+                    // 欧朋街道地图
+                    me.clearLayers()
+                    mapTypeLayer = new G.Layer.OpenStreetMap();
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    me.adjustByLayer(mapTypeLayer);
+                    break;
+                case 2:
+                    //百度街道地图
+                    me.clearLayers()
+                    mapTypeLayer = new G.Layer.BaiduMap('street');
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    me.adjustByLayer(mapTypeLayer);
+                    break;
+                case 3:
+                    // 百度卫星图
+                    me.clearLayers()
+                    mapTypeLayer = new G.Layer.BaiduMap('sate');
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    mapTypeLayer = new G.Layer.BaiduMap('satel');
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    me.adjustByLayer(mapTypeLayer);
+                    break;
+                case 4:
+                    // 高德街道地图
+                    me.clearLayers()
+                    mapTypeLayer = new G.Layer.AMap('street');
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    me.adjustByLayer(mapTypeLayer);
+                    break;
+                case 5:
+                    // 高德卫星图
+                    me.clearLayers()
+                    mapTypeLayer = new G.Layer.AMap('sate');
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    mapTypeLayer = new G.Layer.AMap('satel');
+                    me.gMap.map.addLayer(mapTypeLayer);
+                    me.adjustByLayer(mapTypeLayer);
+                    break;
+            }
+
+        }
+
+        // 清除所有图层
+        BaseMap.prototype.clearLayers = function() {
+            var layers = map.getLayers();
+            for (var i in layers) {
+                map.getLayer(i).remove();
+            }
+        };
+        // 适配地图类型
+        BaseMap.prototype.adjustByLayer = function(layer) {
+            map.options.minRes = layer.options.minRes;
+            map.options.maxRes = layer.options.maxRes;
+
+            var res = map.getResolution();
+            var size = map.getSize();
+            var center = map.getCenter();
+            // console.log(layer.options)
+            map.view(center, size[0] * res, size[1] * res, map.getRotate());
+        };
+        /*
+            添加地图监听事件
+            (请使用百度原事件) 需废弃
+            如果不行 请用 bind 替换 addEventListener
+        */
+        BaseMap.prototype.addEventListener = function(type, target) {
+            var me = this;
+            //添加事件
+            var func = (type == 'dragend' || type == 'resize' || type == 'zoomend') ? function() {
+                me.tipPositionRefresh();
+                if (typeof target == 'function') target();
+            } : target;
+            this.events = this.events || {};
+            this.events[type] = func;
+            this.gmap.addEventListener(type, func);
+        }
+        /*
+            清除地图监听事件
+            (请使用百度原事件) 需废弃
+            如果不行 请用 unbind 替换 removeEventListener
+        */
+        BaseMap.prototype.removeEventListener = function(type) {
+            this.events = this.events || {};
+            this.gmap.removeEventListener(type, this.events[type]);
+        }
         /*刷新mapTip 的位置*/
         BaseMap.prototype.tipPositionRefresh = function() {
             var me = this;
@@ -125,7 +220,6 @@ function preventDefault(e) {
             var id = mapTip.opts.id,
                 me = this,
                 tips = this.tips || {};
-
             // var mapNode = this.gmap.getContainer();
             // var mapNode = this.param.map;
             var mapNode = me.mapContainer;
@@ -141,12 +235,10 @@ function preventDefault(e) {
         }
 
         BaseMap.prototype.removeMapTip = function(mapTip) {
-
             if (mapTip) {
                 var id = mapTip.opts.id;
                 var tips = this.tips || {};
                 if (tips[id]) delete tips[id];
-
                 mapTip.destroy();
             }
         }
@@ -174,20 +266,20 @@ function preventDefault(e) {
             open close
               (废弃）
         */
-        BaseMap.prototype.fullScreen = function(type) {
-            var mapObj = this.gMap.mapContainer,
-                center = this.gMap.gmap.getCenter(),
-                // zoom = this.gmap.getZoom();
-                if (type == 'close') {
-                    //关闭全屏
-                    $(mapObj.parentNode).removeClass('fullScreen')
-                } else {
-                    //开启全屏
-                    $(mapObj.parentNode).addClass('fullScreen');
-                }
-            //设置中心点
-            this.gmap.centerAt(center);
-        }
+        // BaseMap.prototype.fullScreen = function(type) {
+        //     var mapObj = this.gMap.mapContainer,
+        //         center = this.gMap.gmap.getCenter(),
+        //         // zoom = this.gmap.getZoom();
+        //         if (type == 'close') {
+        //             //关闭全屏
+        //             $(mapObj.parentNode).removeClass('fullScreen')
+        //         } else {
+        //             //开启全屏
+        //             $(mapObj.parentNode).addClass('fullScreen');
+        //         }
+        //     //设置中心点
+        //     this.gmap.centerAt(center);
+        // }
 
         /*
             画区县板块街道名称
@@ -209,10 +301,10 @@ function preventDefault(e) {
             }, opts);
             this.initialize()
         }
+
         DrawPolygonLabbel.prototype.initialize = function() {
             var self = this;
             self.labels = [];
-
             $.each(self.opts.data, function(i, j) {
                 var points = [];
                 $.each(j.sPoint.split("#"), function(k, pointStr) {
@@ -247,69 +339,72 @@ function preventDefault(e) {
             methods:{
                 openTip:function(){}
             } 方法
+            需要手动加入到地图中
+            还是有问题
         */
 
-        function new G.Layer.Graphic(point, bmap, opts, methods) {
-            this._point = point;
-            this._opts = opts;
-            this._gmap = gmap;
-            this._methods = methods;
-        }
-        CustomOverlay.prototype = new G.Layer.Graphic();
-        CustomOverlay.prototype.initialize = function() {
-            var div = document.createElement("div");
-            div.style.position = "absolute";
-            div.style.cursor = "pointer";
-            div.style.zIndex = this._opts.zIndex || 0;
+        // function new G.Layer.Graphic(point, bmap, opts, methods) {
+        //     this._point = point;
+        //     this._opts = opts;
+        //     this._gmap = gmap;
+        //     this._methods = methods;
+        // }
+        // CustomOverlay.prototype = new G.Layer.Graphic();
+        // CustomOverlay.prototype.initialize = function() {
+        //     var div = document.createElement("div");
+        //     div.style.position = "absolute";
+        //     div.style.cursor = "pointer";
+        //     div.style.zIndex = this._opts.zIndex || 0;
 
-            if (this._opts.id) {
-                div.id = this._opts.id;
-            }
-            div.className = this._opts.labelClass || '';
-            div.innerHTML = this._opts.labelText || '';
-            if (this._opts.style)
-                div.style = this._opts.style || '';
-            this._div = div;
-            // 有问题
-            this._gmap.graphic.labelLayer.appendChild(this._div);
-            return this._div;
-        };
+        //     if (this._opts.id) {
+        //         div.id = this._opts.id;
+        //     }
+        //     div.className = this._opts.labelClass || '';
+        //     div.innerHTML = this._opts.labelText || '';
+        //     if (this._opts.style)
+        //         div.style = this._opts.style || '';
+        //     this._div = div;
+        //     // 有问题
+        //     //graphicLayer.addTo(map);
+        //     this._gmap.graphic.labelLayer.appendChild(this._div);
+        //     return this._div;
+        // };
 
-        CustomOverlay.prototype.draw = function() {
-            var pixel = this._bmap.toScreen(this._point);
-            var left = pixel[0];
-            var top = pixel[1];
+        // CustomOverlay.prototype.draw = function() {
+        //     var pixel = this._bmap.toScreen(this._point);
+        //     var left = pixel[0];
+        //     var top = pixel[1];
 
-            left = pixel[0] - this._opts.width;
-            top = pixel[1] - this._opts.height;
+        //     left = pixel[0] - this._opts.width;
+        //     top = pixel[1] - this._opts.height;
 
-            this._div.style.left = left + "px";
-            this._div.style.top = top + "px";
-            this._div.style.zIndex = this._opts.zIndex || 0;
+        //     this._div.style.left = left + "px";
+        //     this._div.style.top = top + "px";
+        //     this._div.style.zIndex = this._opts.zIndex || 0;
 
-            if (this.isOpen) {
-                var method = (this._methods || {}).openTip;
-                if (method) method();
-            }
-        };
-        CustomOverlay.prototype.AddEvent = function(type, func) {
-            if (!this._div) {
-                return;
-            }
-            type = type.replace(/^on/i, '').toLowerCase();
-            if (this._div.addEventListener) {
-                this._div.addEventListener(type, func, false);
-            } else if (this._div.attachEvent) {
-                this._div.attachEvent("on" + type, func);
-            }
-        }
-        CustomOverlay.prototype.hide = function() {
-            this.isOpen = false;
-            this._div.style.display = 'none';
-        }
-        CustomOverlay.prototype.show = function() {
-            this._div.style.display = '';
-        }
+        //     if (this.isOpen) {
+        //         var method = (this._methods || {}).openTip;
+        //         if (method) method();
+        //     }
+        // };
+        // CustomOverlay.prototype.AddEvent = function(type, func) {
+        //     if (!this._div) {
+        //         return;
+        //     }
+        //     type = type.replace(/^on/i, '').toLowerCase();
+        //     if (this._div.addEventListener) {
+        //         this._div.addEventListener(type, func, false);
+        //     } else if (this._div.attachEvent) {
+        //         this._div.attachEvent("on" + type, func);
+        //     }
+        // }
+        // CustomOverlay.prototype.hide = function() {
+        //     this.isOpen = false;
+        //     this._div.style.display = 'none';
+        // }
+        // CustomOverlay.prototype.show = function() {
+        //     this._div.style.display = '';
+        // }
 
         /*
             id: mapTip-id
@@ -406,7 +501,6 @@ function preventDefault(e) {
 
             //添加
             this.$node = $div;
-
             if (me.opts.methods.mouseover) {
                 $div.mouseover(function(e) {
                     me.opts.methods.mouseover(e, me);
@@ -449,7 +543,6 @@ function preventDefault(e) {
                         position = { top: pixel[1] > nodeHeight / 2 ? pixel[1] - nodeHeight / 2 : 0, left: pixel[0] }
                         break;
                 }
-
             } else {
                 if (pixel[0] > nodeWidth && pixel[0] < mapSize[0] - nodeWidth / 2) {
                     position.top = pixel[1] > nodeHeight ? pixel[1] - nodeHeight : pixel[1];
@@ -465,7 +558,6 @@ function preventDefault(e) {
                     position.left = pixel[0] - me.$node.width() / 2;
                     position.top = pixel[1] > nodeHeight ? pixel[1] - me.$node.height() : pixel[1];
                 }
-
             }
             position.top = position.top < pixel[1] ? position.top - me.opts.offset.top : position.top + me.opts.offset.bottom;
             if (position.left <= pixel[0] - nodeWidth) position.left = position.left - me.opts.offset.left;
@@ -507,8 +599,6 @@ function preventDefault(e) {
         MapTip.prototype.drawMapLine = function() {
             var me = this,
                 gmap = me.gMap.map;
-
-
             var mapNode = me.gMap.mapContainer,
                 mapNodePos = GetAbsPoint(mapNode);
             //绘制 point 与 tip 联系
@@ -526,8 +616,6 @@ function preventDefault(e) {
 
             if (me.mapLine) {
                 me.mapLine.updateGeom(points);
-
-
             } else {
                 var line = me.mapLine = new G.Graphic.Polyline(points, null, me.opts.polylineStyle);
                 //添加到图层中 
@@ -579,12 +667,11 @@ function preventDefault(e) {
         // }
 
 
-        exports.customOverlay = CustomOverlay;
+        // exports.customOverlay = CustomOverlay;
         exports.map = BaseMap;
         exports.gtip = MapTip;
     }));
 /*
-
     Flipped
       on
       you
